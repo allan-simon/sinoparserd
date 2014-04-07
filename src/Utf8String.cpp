@@ -57,7 +57,7 @@ Segments create_new_utf8_string (std::string stringToSegment) {
         //it is now ready to be added to the list of utf-8 characters
         if (characterSize <= 0) {
             segmentedLine.push_back(utf8Character);
-            segment.clear();
+            utf8Character.clear();
         }
     }
 
