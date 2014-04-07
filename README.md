@@ -11,7 +11,6 @@ The data files are provided only as example
 ### Requirement ###
 
   * libexpat
-  * libgmm++
   * libevent
 
 ### Usage ###

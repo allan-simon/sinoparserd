@@ -1,11 +1,12 @@
 #ifndef SINOPARSER_PARSER_H
 #define SINOPARSER_PARSER_H
 
-#include <glibmm/ustring.h>
 #include <vector>
 #include <map>
+#include <algorithm>
 #include "Index.h"
 #include "Database.h"
+#include "Utf8String.h"
 
 #define TRADITIONAL_SCRIPT true
 #define SIMPLIFIED_SCRIPT false
@@ -14,16 +15,16 @@
 template <typename T>
 class Parser{
     private:
-        Glib::ustring text_to_parse;
-        std::vector<Glib::ustring> segments;
+        Utf8String text_to_parse;
+        std::vector<std::string> segments;
         std::vector<T*> items;
-        std::map<Glib::ustring, Glib::ustring> convertChinese2Latin;
-        std::map<Glib::ustring, Glib::ustring> convertLatin2Chinese;
+        std::map<std::string, std::string> convertChinese2Latin;
+        std::map<std::string, std::string> convertLatin2Chinese;
 
         inline void init_maps();
 
-        Glib::ustring convert_trash_segment(Glib::ustring segment, bool toLatin);
-        Glib::ustring convert_trash_char(Glib::ustring trashChar, bool toLatin);
+        std::string convert_trash_segment(std::string segment, bool toLatin);
+        std::string convert_trash_char(std::string trashChar, bool toLatin);
 
 
         inline std::string romanize_segment(int segmentNbr);
@@ -32,7 +33,7 @@ class Parser{
 
     public:
         Parser();
-        Parser(Glib::ustring text);
+        Parser(Utf8String text);
         Parser(char* text);
 
         void change_text(char* text); 
@@ -42,7 +43,7 @@ class Parser{
         std::string trad();
         std::string simp();
         std::string change_script();
-        std::vector<Glib::ustring> get_segments();
+        std::vector<std::string> get_segments();
 
         bool guess_script();
         void parse_against_index(Index<T>& index);
@@ -72,7 +73,7 @@ Parser<T>::Parser() {
  * 
  */
 template <typename T>
-Parser<T>::Parser(Glib::ustring text) {
+Parser<T>::Parser(Utf8String text) {
     text_to_parse = text;
     init_maps();
 }
@@ -82,7 +83,7 @@ Parser<T>::Parser(Glib::ustring text) {
  */
 template <typename T>
 Parser<T>::Parser(char* text) {
-    text_to_parse = Glib::ustring(text);
+    text_to_parse = Utf8String(text);
     init_maps();
 
 }
@@ -92,24 +93,24 @@ Parser<T>::Parser(char* text) {
  */
 template <typename T>
 inline void Parser<T>::init_maps() {
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("。","."));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("、",","));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("？","?"));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("，",","));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("！","!"));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("；",";"));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("：",":"));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("‘","'"));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("“","\""));
-    convertChinese2Latin.insert(std::pair<Glib::ustring, Glib::ustring>("”","\""));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("。","."));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("、",","));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("？","?"));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("，",","));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("！","!"));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("；",";"));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("：",":"));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("‘","'"));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("“","\""));
+    convertChinese2Latin.insert(std::pair<std::string, std::string>("”","\""));
 
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>(".","。"));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>("?","？"));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>(",","，"));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>("!","！"));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>(";","；"));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>(":","："));
-    convertLatin2Chinese.insert(std::pair<Glib::ustring, Glib::ustring>("\"","“"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>(".","。"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>("?","？"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>(",","，"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>("!","！"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>(";","；"));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>(":","："));
+    convertLatin2Chinese.insert(std::pair<std::string, std::string>("\"","“"));
 
 
 }
@@ -120,7 +121,7 @@ inline void Parser<T>::init_maps() {
 
 template <typename T>
 void Parser<T>::change_text(char* text) {
-    text_to_parse = Glib::ustring(text);
+    text_to_parse = Utf8String(text);
     segments.clear();
     items.clear();
 }
@@ -178,17 +179,27 @@ void Parser<T>::parse_against_index(Index<T> & index) {
     // borderline :p)
 
     while (startPosition < text_to_parse.size()) {
-        Glib::ustring longestMatchBlock = "";
+        std::string longestMatchBlock = "";
         T* longestMatchItem = NULL;
+        // we use this because we can't rely on longestMatchBlock.size()
+        // to give us the number of utf-8 character, as it return simply
+        // a number of byte, and in utf-8:
+        // number of byte != number of character
+        size_t sizeLongestMatchBlock = 0;
 
-        std::string tempBlock = text_to_parse.substr(startPosition,1);
+        std::string tempBlock = text_to_parse.substr(startPosition, 1);
 
         T* tempItem  = index.get_item(tempBlock);
 
         if (tempItem != NULL) {
             // normal mode try to find the longest word starting 
             // at the end of the previous one
-            for (int i = 1; i  <= MIN(text_to_parse.size()-startPosition, WINDOW) ; i++) { 
+            size_t maxSubstringSize = std::min(
+                text_to_parse.size() - startPosition,
+                static_cast<size_t>(WINDOW)
+            );
+
+            for (int i = 1; i <= maxSubstringSize; i++) { 
                 
                 tempBlock = text_to_parse.substr(startPosition,i);
 
@@ -198,6 +209,7 @@ void Parser<T>::parse_against_index(Index<T> & index) {
                 // so we consider it as the current longest one
                 if (tempItem != NULL) {
                     longestMatchBlock = tempBlock;
+                    sizeLongestMatchBlock = i;
                     longestMatchItem  = tempItem;
                 }
             }
@@ -217,6 +229,7 @@ void Parser<T>::parse_against_index(Index<T> & index) {
                     break;
                 }
 
+                sizeLongestMatchBlock++;
                 longestMatchBlock += tempBlock;
                 longestMatchItem  = tempItem;
             }
@@ -225,7 +238,7 @@ void Parser<T>::parse_against_index(Index<T> & index) {
         segments.push_back(longestMatchBlock); 
         items.push_back(longestMatchItem);
 
-        startPosition += longestMatchBlock.size();
+        startPosition += sizeLongestMatchBlock;
     }
    
 }
@@ -428,8 +441,8 @@ std::string Parser<T>::change_script() {
  */
 
 template <typename T>
-Glib::ustring Parser<T>::convert_trash_segment(Glib::ustring segment, bool toLatin) {
-    Glib::ustring temp("");
+std::string Parser<T>::convert_trash_segment(std::string segment, bool toLatin) {
+    std::string temp("");
     for (int i = 0; i < segment.size() ; i++) {
         temp += convert_trash_char(segment.substr(i,1), toLatin); 
     }
@@ -442,10 +455,10 @@ Glib::ustring Parser<T>::convert_trash_segment(Glib::ustring segment, bool toLat
  */
 
 template <typename T>
-Glib::ustring Parser<T>::convert_trash_char(Glib::ustring trashChar, bool toLatin) {
+std::string Parser<T>::convert_trash_char(std::string trashChar, bool toLatin) {
 
-    std::map<Glib::ustring, Glib::ustring>::iterator iter;
-    std::map<Glib::ustring, Glib::ustring> convertMap ;
+    std::map<std::string, std::string>::iterator iter;
+    std::map<std::string, std::string> convertMap ;
 
     if (toLatin) {
         convertMap = convertChinese2Latin;
@@ -468,7 +481,7 @@ Glib::ustring Parser<T>::convert_trash_char(Glib::ustring trashChar, bool toLati
  */
 
 template <typename T>
-std::vector<Glib::ustring> Parser<T>::get_segments() {
+std::vector<std::string> Parser<T>::get_segments() {
     return segments;
 }
 
