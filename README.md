@@ -13,6 +13,16 @@ The data files are provided only as example
   * libexpat
   * libevent
 
+### Install ###
+
+If you never used `cmake` have a look at [this tutorial](http://web.cs.swarthmore.edu/~adanner/tips/cmake.php).
+```bash
+git clone git://github.com/allan-simon/sinoparserd
+sudo apt-get install libexpat1{,-dev} libevent-{2.0-5,dev} cmake
+cd sinoparserd/ && cmake ./ && make
+```
+This should output something like:
+  > ![compilation screenshot](compilation-screenshot.png)
 ### Usage ###
 
     ./sinoparserd -c path/to/cantone.xml -m path/to/mandarin.xml -p PORT
