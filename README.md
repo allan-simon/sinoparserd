@@ -23,11 +23,12 @@ cd sinoparserd/ && cmake ./ && make
 ```
 This should output something like:
   > ![compilation screenshot](compilation-screenshot.png)
+
 ### Usage ###
 
-    ./sinoparserd -c path/to/cantone.xml -m path/to/mandarin.xml -p PORT
+    ./sinoparserd -c  doc/cantonese.xml -m doc/mandarin.xml -p PORT
 
-That will launch an HTTP server listening on port PORT
+That will launch an HTTP server listening on port `PORT`. If the option `-p` is missing it will listen on port `8080`
 
 it provides the following API call, that will return a XML answer
 
