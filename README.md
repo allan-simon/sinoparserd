@@ -32,13 +32,13 @@ That will launch an HTTP server listening on port `PORT`. If the option `-p` is 
 
 it provides the following API call, that will return a XML answer
 
-  * /pinyin?str=\*
-  * /jyutping?str=\*
-  * /change\_script?str=\*
-  * /trad?str=\*
-  * /simp?str=\*
-  * /guess\_script?str=\*
-  * /all?str=\*
+  * [/pinyin?str=\*](http://localhost:8080/pinyin?str=\*)
+  * [/jyutping?str=\*](http://localhost:8080/jyutping?str=\*)
+  * [/change\_script?str=\*](http://localhost:8080/change\_script?str=\*)
+  * [/trad?str=\*](http://localhost:8080/trad?str=\*)
+  * [/simp?str=\*](http://localhost:8080/simp?str=\*)
+  * [\_script?str=\*](http://localhost:8080/guess\_script?str=\*)
+  * [/all?str=\*](http://localhost:8080/all?str=\*)
 
 ## License
 
