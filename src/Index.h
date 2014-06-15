@@ -4,7 +4,7 @@
 #include <iostream>
 #include <map>
 extern "C" {
-#include "tato/tree_str.h"
+#include "tato/TatoTreeStr.h"
 }
 
 /**
