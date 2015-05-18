@@ -3,8 +3,8 @@
 #include <evhttp.h>
 
 #define PARSE_URI(request, params) { \
-    char const *uri = evhttp_request_uri(request); \
-    evhttp_parse_query(uri, &params); \
+    const char *query_part = evhttp_uri_get_query(request->uri_elems); \
+    evhttp_parse_query_str(query_part, &params); \
 }
 
 
