@@ -3,8 +3,8 @@
 #include <evhttp.h>
 
 #define PARSE_URI(request, params) { \
-    char const *uri = evhttp_request_uri(request); \
-    evhttp_parse_query(uri, &params); \
+    const char *query_part = evhttp_uri_get_query(request->uri_elems); \
+    evhttp_parse_query_str(query_part, &params); \
 }
 
 
@@ -116,6 +116,8 @@ static void http_pinyin_callback(struct evhttp_request *request, void *data) {
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 /**** uri: /jyutping?str=*
@@ -148,6 +150,8 @@ static void http_jyutping_callback(struct evhttp_request *request, void *data) {
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
@@ -182,6 +186,8 @@ static void http_change_script_callback(struct evhttp_request *request, void *da
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
@@ -218,6 +224,8 @@ static void http_trad_callback(struct evhttp_request *request, void *data) {
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
@@ -253,6 +261,8 @@ static void http_simp_callback(struct evhttp_request *request, void *data) {
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
@@ -294,6 +304,8 @@ static void http_guess_script_callback(struct evhttp_request *request, void *dat
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
@@ -337,6 +349,8 @@ static void http_all_callback(struct evhttp_request *request, void *data) {
 
     evhttp_send_reply(request, HTTP_OK, "", buffer);
 
+    evhttp_clear_headers(&params_get);
+    evbuffer_free(buffer);
 }
 
 
