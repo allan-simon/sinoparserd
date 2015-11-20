@@ -19,12 +19,11 @@ class Parser{
         std::vector<std::string> segments;
         std::vector<T*> items;
         std::map<std::string, std::string> convertChinese2Latin;
-        std::map<std::string, std::string> convertLatin2Chinese;
 
         inline void init_maps();
 
-        std::string convert_trash_segment(std::string segment, bool toLatin);
-        std::string convert_trash_char(std::string trashChar, bool toLatin);
+        std::string convert_trash_segment(std::string segment);
+        std::string convert_trash_char(std::string trashChar);
 
 
         inline std::string romanize_segment(int segmentNbr);
@@ -103,16 +102,6 @@ inline void Parser<T>::init_maps() {
     convertChinese2Latin.insert(std::pair<std::string, std::string>("‘","'"));
     convertChinese2Latin.insert(std::pair<std::string, std::string>("“","\""));
     convertChinese2Latin.insert(std::pair<std::string, std::string>("”","\""));
-
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>(".","。"));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>("?","？"));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>(",","，"));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>("!","！"));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>(";","；"));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>(":","："));
-    convertLatin2Chinese.insert(std::pair<std::string, std::string>("\"","“"));
-
-
 }
 
 /**
@@ -297,7 +286,7 @@ inline std::string Parser<T>::romanize_segment(int segmentNbr) {
     if (tempItem != NULL) {
         temp += tempItem->romanization;
     } else {
-        temp += convert_trash_segment(segments[segmentNbr], true);
+        temp += convert_trash_segment(segments[segmentNbr]);
     }
     return temp;
 }
@@ -337,7 +326,7 @@ inline std::string Parser<T>::trad_segment(int segmentNbr) {
             temp += tempItem->str_other_script;
         }
     } else {
-        temp += convert_trash_segment(segments[segmentNbr], false);
+        temp += segments[segmentNbr];
     }
     return temp;
 }
@@ -376,7 +365,7 @@ inline std::string Parser<T>::simp_segment(int segmentNbr) {
             temp += tempItem->str_other_script;
         }
     } else {
-        temp+= convert_trash_segment(segments[segmentNbr], false);
+        temp += segments[segmentNbr];
     }
     return temp;
 }
@@ -441,10 +430,10 @@ std::string Parser<T>::change_script() {
  */
 
 template <typename T>
-std::string Parser<T>::convert_trash_segment(std::string segment, bool toLatin) {
+std::string Parser<T>::convert_trash_segment(std::string segment) {
     std::string temp("");
     for (int i = 0; i < segment.size() ; i++) {
-        temp += convert_trash_char(segment.substr(i,1), toLatin); 
+        temp += convert_trash_char(segment.substr(i,1));
     }
     return temp;
 }
@@ -455,16 +444,10 @@ std::string Parser<T>::convert_trash_segment(std::string segment, bool toLatin) 
  */
 
 template <typename T>
-std::string Parser<T>::convert_trash_char(std::string trashChar, bool toLatin) {
+std::string Parser<T>::convert_trash_char(std::string trashChar) {
 
     std::map<std::string, std::string>::iterator iter;
-    std::map<std::string, std::string> convertMap ;
-
-    if (toLatin) {
-        convertMap = convertChinese2Latin;
-    } else {
-        convertMap = convertLatin2Chinese;
-    }
+    std::map<std::string, std::string> convertMap = convertChinese2Latin;
     
     iter = convertMap.find(trashChar);
 
