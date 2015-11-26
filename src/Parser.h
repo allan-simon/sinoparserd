@@ -432,8 +432,9 @@ std::string Parser<T>::change_script() {
 template <typename T>
 std::string Parser<T>::convert_trash_segment(std::string segment) {
     std::string temp("");
-    for (int i = 0; i < segment.size() ; i++) {
-        temp += convert_trash_char(segment.substr(i,1));
+    Utf8String chars(segment);
+    for (auto &character : chars) {
+        temp += convert_trash_char(character);
     }
     return temp;
 }
