@@ -47,6 +47,13 @@ class Utf8String {
          * not size in bytes
          */
         size_t size() const;
+
+        /**
+         * Provide iterator functions
+         */
+        using iterator = Segments::iterator;
+        iterator begin() { return segments.begin(); }
+        iterator end()   { return segments.end(); }
 };
 
 /**
